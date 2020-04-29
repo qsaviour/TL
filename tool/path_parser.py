@@ -1,13 +1,27 @@
 import os
+import shutil
+
+
+def make_dirs(path, force=False):
+    if force:
+        if os.path.exists(path):
+            shutil.rmtree(path)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+
+def cvt_abs_path(rpath):
+    return os.path.normpath(os.path.join(os.getcwd(), rpath))
 
 
 def dfs(path, filter_function, do_function, collection, collection_limit=None):
+    print('* In folder', path)
     for obj in os.listdir(path):
         if type(collection_limit) is int:
             if len(collection) > collection_limit:
                 return
         cur_path = '/'.join([path, obj])
-        if os.path.isdir(cur_path):
+        if os.path.isdir(cur_path) and 'invalid' not in cur_path.lower():
             dfs(cur_path, filter_function, do_function, collection, collection_limit=collection_limit)
         elif filter_function(cur_path):
             do_function(cur_path, collection)
