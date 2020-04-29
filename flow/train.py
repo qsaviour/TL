@@ -27,6 +27,10 @@ def train(args):
         from flow.data_generator import multiple_generator
         generator = multiple_generator(train_collection, args.batch, args.orderly_sample)
 
-    print(next(generator))
-    print(next(generator))
+    import time
+    t1=time.time()
+    for _ in range(100):
+        res = next(generator)
+        print(len(res))
+    print(time.time()-t1)
 # collection = data_prepare()

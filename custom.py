@@ -3,6 +3,7 @@ import re
 import os
 from tool.path_parser import path_split, suffix_filter
 from tool.others import split_list
+import cv2
 
 
 def file_filter(data_path):
@@ -45,4 +46,5 @@ def split_train_test_set(collection):
 
 
 def generate(record):
-    pass
+    img = cv2.imread(record['img_path'])
+    return img.shape
