@@ -56,8 +56,6 @@ class Processor:
             y_img = max(0, y)
             w_img = min(x + w, w, shape[1] - x, shape[1])
             h_img = min(y + h, h, shape[0] - y, shape[0])
-            print(tmp[y_tmp:y_tmp + h_tmp, x_tmp:x_tmp + w_tmp].shape)
-            print(img[y_img:y_img + h_img, x_img:x_img + w_img].shape)
             tmp[y_tmp:y_tmp + h_tmp, x_tmp:x_tmp + w_tmp] = img[y_img:y_img + h_img, x_img:x_img + w_img]
 
         else:
