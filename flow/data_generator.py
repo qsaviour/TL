@@ -24,6 +24,7 @@ def multiple_generator(collection, batch_size, gen_type, feed_type='1in1', q_lim
     @name_decorator
     def feed_queue1():
         while True:
+            print(queue.qsize())
             if queue.qsize() < q_limit:
                 collection_batch = random.choices(collection, k=batch_size)
                 x = []
@@ -32,6 +33,7 @@ def multiple_generator(collection, batch_size, gen_type, feed_type='1in1', q_lim
                     x_, y_ = generate_x_y(e)
                     x.append(x_)
                     y.append(y_)
+                queue.put((x,y))
 
     def feed_queue3():
         pass
