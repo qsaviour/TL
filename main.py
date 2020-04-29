@@ -28,6 +28,7 @@ def parse_argument():
 
 
 def main():
+    print('999999')
     args = parse_argument()
     print_("project:", args.project)
     if args.train:

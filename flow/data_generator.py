@@ -47,5 +47,5 @@ def multiple_generator(collection, batch_size, gen_type, feed_type='1in1', q_lim
         # process = Process(target=feed_queue1)
         # process.run()
 
-        while True:
-            yield queue.get()
+        # while True:
+        #     yield queue.get()
