@@ -1,4 +1,4 @@
-from custom import generate
+from custom import generate_x_y
 from tool.others import name_decorator, print_
 import random
 import cv2
@@ -20,32 +20,33 @@ def multiple_generator(collection, batch_size, gen_type, feed_type='1in1', q_lim
     :param q_limit:
     :return:
     """
+
     @name_decorator
     def feed_queue1():
         while True:
             if queue.qsize() < q_limit:
                 collection_batch = random.choices(collection, k=batch_size)
+                x = []
+                y = []
                 for e in collection_batch:
-                    queue.put([generate(e) for e in collection_batch])
-
+                    x_, y_ = generate_x_y(e)
+                    x.append(x_)
+                    y.append(y_)
 
     def feed_queue3():
         pass
 
-    from multiprocessing.dummy import Pool, JoinableQueue, Process
+    from multiprocessing.dummy import Pool, JoinableQueue
     from multiprocessing import cpu_count
 
     assert feed_type in ('1in1', '3in1')
 
     if feed_type == '1in1':
         queue = JoinableQueue()
-        p_num = max(cpu_count() - 2, 1)
+        p_num = max(cpu_count() // 2, 1)
         pool = Pool(p_num)
-        pool.apply_async(feed_queue1)
-        pool.apply_async(feed_queue1)
-        pool.apply_async(feed_queue1)
-        # process = Process(target=feed_queue1)
-        # process.run()
+        for _ in range(p_num):
+            pool.apply_async(feed_queue1)
 
         while True:
             yield queue.get()

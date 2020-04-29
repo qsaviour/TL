@@ -4,6 +4,7 @@ import os
 from tool.path_parser import path_split, suffix_filter
 from tool.others import split_list
 import cv2
+from tool.processor import processor
 
 
 def file_filter(data_path):
@@ -45,6 +46,12 @@ def split_train_test_set(collection):
     return train_collection, test_collection
 
 
-def generate(record):
+def generate_x_y(record):
     img = cv2.imread(record['img_path'])
-    return img.shape
+    location = record['location']
+    crop = processor.augment(img, location, target_shape=(200, 200))
+    if record['label'] == 'tesla':
+        label = [1, 0]
+    else:
+        label = [0, 1]
+    return crop, label
