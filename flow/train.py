@@ -31,6 +31,5 @@ def train(args):
     t1=time.time()
     for _ in range(10):
         res = next(generator)
-        print(len(res))
     print(time.time()-t1)
 # collection = data_prepare()

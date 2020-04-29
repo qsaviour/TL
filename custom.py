@@ -37,7 +37,8 @@ def data_prepare(data_path, collection):
         label = a_data['label']
         location = a_data['points']
         (x, y), (w, h) = location
-        collection.append({'img_path': image_path, 'label': label, 'location': [x, y, w, h]})
+        collection.append(
+            {'img_path': image_path, 'label': label, 'location': [x, y, w, h], 'img': cv2.imread(image_path)})
     return collection
 
 
@@ -47,10 +48,9 @@ def split_train_test_set(collection):
 
 
 def generate_x_y(record):
-    img = cv2.imread(record['img_path'])
+    img = record['img']
     location = record['location']
     crop = processor.augment(img, location, target_shape=(200, 200))
-    print(crop.shape)
     if record['label'] == 'tesla':
         label = [1, 0]
     else:
