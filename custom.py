@@ -2,7 +2,7 @@ import json
 import re
 import os
 from tool.path_parser import path_split, suffix_filter
-from tool.others import split_list
+from tool.others import split_list, name_decorator, balance_label
 import cv2
 from tool.processor import processor
 
@@ -34,25 +34,38 @@ def data_prepare(data_path, collection):
         print(image_path, "not exists")
         return
     for a_data in json_content['shapes']:
-        label = a_data['label']
+        annotation = a_data['label']
+        if annotation == 'tesla':
+            label = [1, 0]
+        else:
+            annotation = 'others'
+            label = [0, 1]
         location = a_data['points']
         (x, y), (w, h) = location
         collection.append(
-            {'img_path': image_path, 'label': label, 'location': [x, y, w, h]})
-    return collection
+            {'img_path': image_path, 'annotation': annotation, 'location': [x, y, w, h], 'label': label})
+        return collection
 
 
+@name_decorator
 def split_train_test_set(collection):
     train_collection, test_collection = split_list(collection, 0.8)
+
+    train_collection = balance_label(train_collection, 'annotation')
+    test_collection = balance_label(test_collection, 'annotation')
+
     return train_collection, test_collection
 
 
+def multi_prepare_record(record):
+    record['img'] = cv2.imread(record['img_path'])
+    return record
+
+
 def generate_x_y(record):
-    img = cv2.imread(record['img_path'])
+    img = record['img']
+    # img = cv2.imread(record['img_path'])
     location = record['location']
     crop = processor.augment(img, location, target_shape=(200, 200))
-    if record.get('label') == 'tesla':
-        label = [1, 0]
-    else:
-        label = [0, 1]
-    return crop, label
+    # label = record['label']
+    return 1, 1

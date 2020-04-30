@@ -1,23 +1,10 @@
-from multiprocessing.dummy import Pool
+from tool.processor import processor
+import time
+import cv2
 
-
-def k(i):
-    for _ in range(9):
-        print(8)
-    return 2
-
-
-def A():
-    print('A')
-    pool = Pool(2)
-    pool.map(k,range(2))
-
-
-
-def B():
-    print('B')
-    A()
-
-
-if __name__ == "__main__":
-    B()
+print('start')
+t1 = time.time()
+for _ in range(32):
+    img = cv2.imread('tesla_000001.jpg')
+    processor.augment(img)
+print(time.time() - t1)

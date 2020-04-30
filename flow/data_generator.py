@@ -10,7 +10,7 @@ def single_generator(collection, batch_size, gen_type):
 
 
 @name_decorator
-def multiple_generator(collection, batch_size, gen_type, feed_type='1in1', q_limit=10):
+def multiple_generator(collection, batch_size, worker_num, gen_type, feed_type='1in1', q_limit=10):
     """
     :param collection: collection
     :param batch_size:
@@ -32,7 +32,7 @@ def multiple_generator(collection, batch_size, gen_type, feed_type='1in1', q_lim
                     x_, y_ = generate_x_y(e)
                     x.append(x_)
                     y.append(y_)
-                queue.put((x,y))
+                queue.put((x, y))
 
     def feed_queue3():
         pass
@@ -44,7 +44,7 @@ def multiple_generator(collection, batch_size, gen_type, feed_type='1in1', q_lim
 
     if feed_type == '1in1':
         queue = JoinableQueue()
-        p_num = max(cpu_count()//2, 1)
+        p_num = max(min(worker_num, cpu_count() - 1), 1)
         pool = Pool(p_num)
         for _ in range(p_num):
             pool.apply_async(feed_queue1)

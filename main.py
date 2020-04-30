@@ -21,14 +21,13 @@ def parse_argument():
     parser_.add_argument("--images", help="an inference folder contain images", type=str, default='')
 
     parser_.add_argument("--force", help="force to re-split test/train sets", action="store_true")
-    parser_.add_argument("--single", help="could be done in parallel", action="store_true")
+    parser_.add_argument("--parallel", help="be done in parallel", type=int, default=3)
 
     args_ = parser_.parse_args()
     return args_
 
 
 def main():
-    print('999999')
     args = parse_argument()
     print_("project:", args.project)
     if args.train:

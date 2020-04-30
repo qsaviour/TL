@@ -4,6 +4,15 @@ import pickle
 from tool.others import name_decorator
 
 
+def multiple_prepare(collection, function, worker_num):
+    from multiprocessing.dummy import Pool
+    from multiprocessing import cpu_count
+    p_num = max(min(worker_num, cpu_count() - 1), 1)
+    pool = Pool(p_num)
+    collection = pool.map(function, collection)
+    return collection
+
+
 @name_decorator
 def exist_pkl(base_path):
     stock_path = cvt_abs_path(os.path.join(base_path, 'stock'))

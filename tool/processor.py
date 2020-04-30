@@ -128,7 +128,7 @@ class Processor:
         return img
 
     def augment(self, img, location=None, target_shape=None, padding=True, drift_ratio=0.05, scale_ratio=0.05,
-                rectify=False, contrast=True, brightness=True, flip=True, hue=True, saturate=True, noise=True):
+                rectify=True, contrast=True, brightness=True, flip=True, hue=True, saturate=True, noise=True):
         img = img.astype(np.float)
         if location:
             if scale_ratio:
@@ -146,10 +146,10 @@ class Processor:
             crop = self.brightness(crop)
         if flip:
             crop = self.flip(crop)
-        # if hue:
-        #     crop = self.hue(crop)
-        # if saturate:
-        #     crop = self.saturate(crop)
+        if hue:
+            crop = self.hue(crop)
+        if saturate:
+            crop = self.saturate(crop)
         if noise:
             crop = self.noise(crop)
         if target_shape:
