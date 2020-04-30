@@ -53,6 +53,7 @@ def search_autokeras(args):
         print_("auto single")
         print_('deal with train data sets')
         train_collection = [multi_prepare_record(e) for e in train_collection]
+
         print_('generate train data')
         train_collection = [generate_x_y_(e) for e in train_collection]
         print_('deal with test data sets')

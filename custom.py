@@ -5,6 +5,7 @@ from tool.path_parser import path_split, suffix_filter
 from tool.others import split_list, name_decorator, balance_label
 import cv2
 from tool.processor import processor
+import numpy as np
 
 
 def file_filter(data_path):
@@ -64,7 +65,7 @@ def multi_prepare_record(record):
     return record
 
 
-def generate_x_y(record, augment):
+def generate_x_y(record, augment=False):
     img = record['img']
     # img = cv2.imread(record['img_path'])
     location = record['location']
@@ -75,5 +76,7 @@ def generate_x_y(record, augment):
         crop = processor.augment(img, location, (256, 256), True, 0.05, 0.05, False, False, False, False, False, False,
                                  False)
     crop = crop.reshape((1,) + crop.shape)
+
     label = record['label']
+    label = np.array(label).reshape(1, -1)
     return crop / 255.0, label
