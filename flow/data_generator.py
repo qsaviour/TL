@@ -29,7 +29,7 @@ def multiple_generator(collection, batch_size, worker_num, gen_type, feed_type='
                 x = []
                 y = []
                 for e in collection_batch:
-                    x_, y_ = generate_x_y(e)
+                    x_, y_ = generate_x_y(e,True)
                     x.append(x_)
                     y.append(y_)
                 queue.put((x, y))

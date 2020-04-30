@@ -41,7 +41,8 @@ def data_prepare(data_path, collection):
             annotation = 'others'
             label = [0, 1]
         location = a_data['points']
-        (x, y), (w, h) = location
+        (x1, y1), (x2, y2) = location
+        x, y, w, h = x1, y1, x2 - x1, y2 - y1
         collection.append(
             {'img_path': image_path, 'annotation': annotation, 'location': [x, y, w, h], 'label': label})
         return collection
@@ -67,9 +68,11 @@ def generate_x_y(record, augment):
     # img = cv2.imread(record['img_path'])
     location = record['location']
     if augment:
-        crop = processor.augment(img, location, target_shape=(200, 200))
-    else:
-        crop = processor.augment(img, location, (200, 200), True, 0.05, 0.05, False, False, False, False, False, False,
+        crop = processor.augment(img, location, (256, 256), True, 0.05, 0.05, False, False, False, False, False, False,
                                  False)
+    else:
+        crop = processor.augment(img, location, (256, 256), True, 0.05, 0.05, False, False, False, False, False, False,
+                                 False)
+    crop = crop.reshape((1,) + crop.shape)
     label = record['label']
-    return crop, label
+    return crop/255.0, label

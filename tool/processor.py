@@ -24,7 +24,7 @@ class Processor:
         x, y, w, h = location
         cx = x + w * 0.5
         cy = y + h * 0.5
-        w = h = (w + h) * 0.5
+        w = h = max(w, h)
         x = cx - w * 0.5
         y = cy - h * 0.5
         location = [x, y, w, h]
@@ -142,8 +142,19 @@ class Processor:
             img = np.clip(img, 0, 255)
         return img
 
+    @staticmethod
+    def padding_rectify(img):
+        radius = max(img.shape[:2])
+        target_shape = (radius, radius) + img.shape[2:]
+        target = np.zeros(target_shape).astype(np.uint8)
+        x = (radius - img.shape[1]) // 2
+        y = (radius - img.shape[0]) // 2
+        # print(img.shape, radius, target_shape, target.shape, x, y)
+        target[y:img.shape[0]+y, x:img.shape[1]+x] = img
+        return target
+
     def augment(self, img, location=None, target_shape=None, padding=True, drift_ratio=0.05, scale_ratio=0.05,
-                rectify=True, contrast=True, brightness=True, flip=True, hue=True, saturate=True, noise=True):
+                rectify=False, contrast=True, brightness=True, flip=True, hue=True, saturate=True, noise=True):
         img = img.astype(np.float)
         if location:
             if scale_ratio:
@@ -153,6 +164,7 @@ class Processor:
             if rectify:
                 location = self.rectify(location)
             crop = self.shear(img, location, padding)
+            crop = self.padding_rectify(crop)
         else:
             crop = img
         if contrast:

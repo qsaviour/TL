@@ -1,8 +1,8 @@
 import autokeras as ak
 from flow.data_prepare import pre_prepare, exist_pkl, get_pkl
 from custom import data_prepare, file_filter, split_train_test_set, multi_prepare_record, generate_x_y
-from tool.path_parser import cvt_abs_path
-from tool.others import print_, balance_label
+from tool.path_parser import cvt_abs_path, make_dirs
+from tool.others import print_, balance_label, name_decorator
 
 from multiprocessing.dummy import Pool
 from multiprocessing import Pool, cpu_count
@@ -13,6 +13,7 @@ def generate_x_y_(obj):
     return generate_x_y(obj, augment=False)
 
 
+@name_decorator
 def search_autokeras(args):
     """
     Just train.
@@ -20,7 +21,6 @@ def search_autokeras(args):
     :return:
     """
     pool = Pool(cpu_count() - 2)
-    print(11)
     if exist_pkl(args.base) and not args.force:
         print_("use the existing pkl file")
         train_collection, test_collection = get_pkl(args.base)
@@ -32,9 +32,21 @@ def search_autokeras(args):
     train_collection = pool.map(multi_prepare_record, train_collection)
     test_collection = pool.map(multi_prepare_record, test_collection)
 
-    train_batch = pool.map(generate_x_y_, train_collection)
-    test_batch = pool.map(generate_x_y_, test_collection)
-    print(99)
-    train_batch = np.array(train_batch)
-    test_batch = np.array(test_batch)
-    clf = ak.ImageClassifier()
+    train_batch = list(zip(pool.map(generate_x_y_, train_collection)))
+    test_batch = list(zip(pool.map(generate_x_y_, test_collection)))
+    print('train size:', len(train_batch))
+    print('test size:', len(test_batch))
+
+    x_train = np.concatenate([e[0][0] for e in train_batch])
+    y_train = np.concatenate([e[0][1] for e in train_batch])
+
+    x_test = np.concatenate([e[0][0] for e in test_batch])
+    y_test = np.concatenate([e[0][1] for e in test_batch])
+
+    clf = ak.ImageClassifier(max_trials=10)
+    clf.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=100)
+    model = clf.export_model()
+    target_folder = '/'.join([args.base, 'stock'])
+    make_dirs(target_folder)
+    target_path = '/'.join([target_folder, 'best.h5'])
+    model.save(target_path)
