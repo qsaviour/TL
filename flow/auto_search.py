@@ -30,39 +30,41 @@ def search_autokeras(args):
         train_collection, test_collection = split_train_test_set(collection)
         del collection
 
+    train_collection = train_collection[:2000]
+    train_collection = train_collection[:200]
     print_('train size:', len(train_collection))
     print_('test size:', len(test_collection))
-    train_collection = train_collection[:5000]
+
     if args.parallel:
         print_("auto parallel")
         print_('deal with train data sets')
         train_collection = pool.map(multi_prepare_record, train_collection)
-        train_batch = list(zip(pool.map(generate_x_y_, train_collection)))
+        train_collection = list(zip(pool.map(generate_x_y_, train_collection)))
         print_('deal with test data sets')
         test_collection = pool.map(multi_prepare_record, test_collection)
-        test_batch = list(zip(pool.map(generate_x_y_, test_collection)))
+        test_collection = list(zip(pool.map(generate_x_y_, test_collection)))
 
-        x_train = np.concatenate([e[0][0] for e in train_batch])
-        y_train = np.concatenate([e[0][1] for e in train_batch])
+        x_train = np.concatenate([e[0][0] for e in train_collection])
+        y_train = np.concatenate([e[0][1] for e in train_collection])
 
-        x_test = np.concatenate([e[0][0] for e in test_batch])
-        y_test = np.concatenate([e[0][1] for e in test_batch])
+        x_test = np.concatenate([e[0][0] for e in test_collection])
+        y_test = np.concatenate([e[0][1] for e in test_collection])
     else:
         print_("auto single")
         print_('deal with train data sets')
         train_collection = [multi_prepare_record(e) for e in train_collection]
-        train_batch = [generate_x_y_(e) for e in train_collection]
+        print_('generate train data')
+        train_collection = [generate_x_y_(e) for e in train_collection]
         print_('deal with test data sets')
         test_collection = [multi_prepare_record(e) for e in test_collection]
-        test_batch = [generate_x_y_(e) for e in test_collection]
+        print_('generate test data')
+        test_collection = [generate_x_y_(e) for e in test_collection]
 
-        x_train = np.concatenate([e[0] for e in train_batch])
-        y_train = np.concatenate([e[1] for e in train_batch])
+        x_train = np.concatenate([e[0] for e in train_collection])
+        y_train = np.concatenate([e[1] for e in train_collection])
 
-        x_test = np.concatenate([e[0] for e in test_batch])
-        y_test = np.concatenate([e[1] for e in test_batch])
-
-
+        x_test = np.concatenate([e[0] for e in test_collection])
+        y_test = np.concatenate([e[1] for e in test_collection])
 
     clf = ak.ImageClassifier(max_trials=10)
     clf.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=100)
