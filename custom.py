@@ -30,7 +30,7 @@ def data_prepare(data_path, collection):
     json_path_base, json_name, prefix, suffix = path_split(data_path)
     image_path_base = re.sub("json[/|\\\]?$", "jpg", json_path_base)
     # image_path = '/'.join([image_path_base, os.path.split(json_content["imagePath"])[-1]])
-    image_path = '/'.join([image_path_base, json_name + '.jpg'])
+    image_path = '/'.join([image_path_base, prefix + '.jpg'])
     if not os.path.exists(image_path):
         print(image_path, "not exists")
         return
