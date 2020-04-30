@@ -15,6 +15,8 @@ def parse_argument():
     parser_.add_argument("--epoch", help="training epochs", type=int, default=100)
     parser_.add_argument("--orderly_sample", help="orderly sample", action="store_true")
 
+    parser_.add_argument("-autokeras", "--autokeras", help="autokeras", action="store_true")
+
     parser_.add_argument("-inference", "--inference", help="inferring", type=str)
     parser_.add_argument("--not_augment", help="don`t augment when generate", action="store_true")
     parser_.add_argument("--image", help="an inference image file", type=str)
@@ -30,6 +32,10 @@ def parse_argument():
 def main():
     args = parse_argument()
     print_("project:", args.project)
+    if args.autokeras:
+        from flow.auto_search import search_autokeras
+        search_autokeras(args)
+
     if args.train:
         print_('training.....')
         from flow.train import train

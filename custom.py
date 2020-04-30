@@ -62,10 +62,14 @@ def multi_prepare_record(record):
     return record
 
 
-def generate_x_y(record):
+def generate_x_y(record, augment):
     img = record['img']
     # img = cv2.imread(record['img_path'])
     location = record['location']
-    crop = processor.augment(img, location, target_shape=(200, 200))
-    # label = record['label']
-    return 1, 1
+    if augment:
+        crop = processor.augment(img, location, target_shape=(200, 200))
+    else:
+        crop = processor.augment(img, location, (200, 200), True, 0.05, 0.05, False, False, False, False, False, False,
+                                 False)
+    label = record['label']
+    return crop, label
