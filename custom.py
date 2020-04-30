@@ -29,7 +29,8 @@ def data_prepare(data_path, collection):
         return
     json_path_base, json_name, prefix, suffix = path_split(data_path)
     image_path_base = re.sub("json[/|\\\]?$", "jpg", json_path_base)
-    image_path = '/'.join([image_path_base, os.path.split(json_content["imagePath"])[-1]])
+    # image_path = '/'.join([image_path_base, os.path.split(json_content["imagePath"])[-1]])
+    image_path = '/'.join([image_path_base, json_name + '.jpg'])
     if not os.path.exists(image_path):
         print(image_path, "not exists")
         return
@@ -75,4 +76,4 @@ def generate_x_y(record, augment):
                                  False)
     crop = crop.reshape((1,) + crop.shape)
     label = record['label']
-    return crop/255.0, label
+    return crop / 255.0, label
