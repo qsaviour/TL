@@ -29,7 +29,7 @@ def train(args):
 
     import time
     t1=time.time()
-    for _ in range(10):
+    for _ in range(100):
         res = next(generator)
     print(time.time()-t1)
 # collection = data_prepare()

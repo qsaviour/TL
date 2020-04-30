@@ -48,12 +48,9 @@ def split_train_test_set(collection):
 
 
 def generate_x_y(record):
-    print(record)
     img = cv2.imread(record['img_path'])
     location = record['location']
-    print(location)
     crop = processor.augment(img, location, target_shape=(200, 200))
-    print(crop.shape)
     if record.get('label') == 'tesla':
         label = [1, 0]
     else:
