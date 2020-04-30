@@ -1,4 +1,3 @@
-import autokeras as ak
 from flow.data_prepare import pre_prepare, exist_pkl, get_pkl
 from custom import data_prepare, file_filter, split_train_test_set, multi_prepare_record, generate_x_y
 from tool.path_parser import cvt_abs_path, make_dirs
@@ -7,6 +6,10 @@ from tool.others import print_, name_decorator, print_
 from multiprocessing.dummy import Pool
 from multiprocessing import Pool, cpu_count
 import numpy as np
+import os
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '3,4'
+import autokeras as ak
 
 
 def generate_x_y_(obj):
@@ -31,16 +34,16 @@ def search_autokeras(args):
         del collection
 
     train_collection = train_collection[:2000]
-    train_collection = train_collection[:200]
+    test_collection = test_collection[:200]
     print_('train size:', len(train_collection))
     print_('test size:', len(test_collection))
 
     if args.parallel:
         print_("auto parallel")
-        print_('deal with train data sets')
+        print_('prepare train data sets')
         train_collection = pool.map(multi_prepare_record, train_collection)
         train_collection = list(zip(pool.map(generate_x_y_, train_collection)))
-        print_('deal with test data sets')
+        print_('prepare test data sets')
         test_collection = pool.map(multi_prepare_record, test_collection)
         test_collection = list(zip(pool.map(generate_x_y_, test_collection)))
 
