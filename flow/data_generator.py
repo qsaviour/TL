@@ -45,7 +45,7 @@ def multiple_generator(collection, batch_size, gen_type, feed_type='1in1', q_lim
 
     if feed_type == '1in1':
         queue = JoinableQueue()
-        p_num = max(cpu_count() // 2, 1)
+        p_num = max(2, 1)
         pool = Pool(p_num)
         for _ in range(p_num):
             pool.apply_async(feed_queue1)

@@ -7,7 +7,7 @@ def name_decorator(func):
     def wrapper(*args, **kwargs):
         global sub
         sub += 1
-        print('  ' * sub, '|-', 'In function ', '\"{}\"'.format(func.__name__))
+        print('  ' * sub, '|-', 'In function ', '\"{}{}\"'.format(__file__, func.__name__))
         res = func(*args, **kwargs)
         sub -= 1
         return res
