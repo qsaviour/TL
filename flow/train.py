@@ -22,7 +22,7 @@ def train(args):
 
     if args.parallel:
         from flow.data_prepare import multiple_prepare
-        multiple_prepare(train_collection, multi_prepare_record, args.parallel)
+        train_collection=multiple_prepare(train_collection, multi_prepare_record, args.parallel)
         from flow.data_generator import multiple_generator
         generator = multiple_generator(train_collection, args.batch, args.parallel, args.orderly_sample)
     else:

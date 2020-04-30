@@ -10,6 +10,7 @@ def multiple_prepare(collection, function, worker_num):
     p_num = max(min(worker_num, cpu_count() - 1), 1)
     pool = Pool(p_num)
     collection = pool.map(function, collection)
+    del pool
     return collection
 
 

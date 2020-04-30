@@ -114,6 +114,21 @@ class Processor:
             img = np.clip(img, 0, 255)
         return img
 
+    def hue_saturate(self, img, hue_ratio=0.05, sat_ratio=0.2, clip=False):
+        if len(img.shape) != 3:
+            return img
+        img = np.clip(img, 0, 255).astype(np.uint8)
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        hsv = hsv.astype(np.float32)
+        hsv[:, :, 0] = (hsv[:, :, 0] + self.shake(180, hue_ratio)) % 180
+        hsv[:, :, 1] *= 1 - sat_ratio * 0.8 + self.shake(sat_ratio, 1)
+        hsv = np.clip(hsv, 0, 255)
+        hsv = hsv.astype(np.uint8)
+        img = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR).astype(np.int)
+        if clip:
+            img = np.clip(img, 0, 255)
+        return img
+
     @staticmethod
     def noise(img, p_=0.9, noise_rage=30, mask_threshold=None, clip=False):
         if np.random.random() > p_:
@@ -146,10 +161,13 @@ class Processor:
             crop = self.brightness(crop)
         if flip:
             crop = self.flip(crop)
-        if hue:
-            crop = self.hue(crop)
-        if saturate:
-            crop = self.saturate(crop)
+        if hue and saturate:
+            crop = self.hue_saturate(crop)
+        else:
+            if hue:
+                crop = self.hue(crop)
+            if saturate:
+                crop = self.saturate(crop)
         if noise:
             crop = self.noise(crop)
         if target_shape:
