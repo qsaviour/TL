@@ -29,6 +29,9 @@ def search_autokeras(args):
         collection = pre_prepare(cvt_abs_path(args.base), data_prepare, file_filter)
         train_collection, test_collection = split_train_test_set(collection)
 
+    print('train size:', len(train_collection))
+    print('test size:', len(test_collection))
+
     print_('multi_prepare_record...')
     train_collection = pool.map(multi_prepare_record, train_collection)
     test_collection = pool.map(multi_prepare_record, test_collection)
@@ -37,8 +40,6 @@ def search_autokeras(args):
     train_batch = list(zip(pool.map(generate_x_y_, train_collection)))
     test_batch = list(zip(pool.map(generate_x_y_, test_collection)))
 
-    print('train size:', len(train_batch))
-    print('test size:', len(test_batch))
 
     x_train = np.concatenate([e[0][0] for e in train_batch])
     y_train = np.concatenate([e[0][1] for e in train_batch])
