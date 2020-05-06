@@ -80,6 +80,6 @@ def build_model(input_shape=(256, 256, 3)):
 
     return Model(inputs, softmax)
 
-
-model = build_model()
-model.save('test.h5')
+if __name__=='__main__':
+    model = build_model()
+    model.save('test.h5')

@@ -38,10 +38,10 @@ def data_prepare(data_path, collection):
     for a_data in json_content['shapes']:
         annotation = a_data['label']
         if annotation == 'tesla':
-            label = 0
+            label = [1, 0]
         else:
             annotation = 'others'
-            label = 1
+            label = [0, 1]
         location = a_data['points']
         (x1, y1), (x2, y2) = location
         x, y, w, h = min(x1, x2), min(y1, y2), abs(x2 - x1), abs(y2 - y1)

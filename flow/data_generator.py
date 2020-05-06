@@ -1,6 +1,7 @@
 from custom import multi_prepare_record, multi_generate_record
 from tool.others import name_decorator
 import random
+import numpy as np
 
 
 @name_decorator
@@ -51,6 +52,11 @@ def multiple_generator(collection, batch_size, worker_num, aug, q_limit=10):
                     x_, y_ = multi_generate_record(e, aug)
                     x.append(x_)
                     y.append(y_)
+                print(1)
+                x = np.concatenate(x, axis=0)
+                print(2)
+                y = np.concatenate(y, axis=0)
+                print(3)
                 queue.put((x, y))
 
     def feed_queue3():
@@ -66,4 +72,5 @@ def multiple_generator(collection, batch_size, worker_num, aug, q_limit=10):
         pool.apply_async(feed_queue1)
 
     while True:
-        yield queue.get()
+        out = queue.get()
+        yield out
