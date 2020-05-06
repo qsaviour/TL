@@ -44,7 +44,7 @@ def data_prepare(data_path, collection):
             label = 1
         location = a_data['points']
         (x1, y1), (x2, y2) = location
-        x, y, w, h = x1, y1, x2 - x1, y2 - y1
+        x, y, w, h = min(x1, x2), min(y1, y2), abs(x2 - x1), abs(y2 - y1)
         collection.append(
             {'img_path': image_path, 'annotation': annotation, 'location': [x, y, w, h], 'label': label})
         return collection
