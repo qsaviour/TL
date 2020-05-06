@@ -8,6 +8,7 @@ from multiprocessing import Pool, cpu_count
 import numpy as np
 import os
 import random
+
 random.seed(1234)
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '3,4'
@@ -36,8 +37,8 @@ def search_autokeras(args):
         del collection
     random.shuffle(train_collection)
     random.shuffle(test_collection)
-    train_collection = train_collection[:2000]
-    test_collection = test_collection[:200]
+    train_collection = train_collection
+    test_collection = test_collection
     print_('train size:', len(train_collection))
     print_('test size:', len(test_collection))
 
@@ -74,6 +75,7 @@ def search_autokeras(args):
         y_test = np.concatenate([e[1] for e in test_collection])
 
     clf = ak.ImageClassifier(max_trials=10)
+    print(x_train.shape, y_train.shape, x_test.shape, y_test.shape)
     clf.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=100)
     model = clf.export_model()
     target_folder = '/'.join([args.base, 'stock'])
