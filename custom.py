@@ -61,13 +61,13 @@ def split_train_test_set(collection):
 
 
 def multi_prepare_record(record):
-    record['img'] = cv2.imread(record['img_path'])
+    # record['img'] = cv2.imread(record['img_path'])
     return record
 
 
 def generate_x_y(record, augment=False):
-    img = record['img']
-    # img = cv2.imread(record['img_path'])
+    # img = record['img']
+    img = cv2.imread(record['img_path'])
     location = record['location']
     if augment:
         crop = processor.augment(img, location, (256, 256), True, 0.05, 0.05, False, False, False, False, False, False,

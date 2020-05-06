@@ -7,6 +7,8 @@ from multiprocessing.dummy import Pool
 from multiprocessing import Pool, cpu_count
 import numpy as np
 import os
+import random
+random.seed(1234)
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '3,4'
 import autokeras as ak
@@ -32,7 +34,8 @@ def search_autokeras(args):
         collection = pre_prepare(cvt_abs_path(args.base), data_prepare, file_filter)
         train_collection, test_collection = split_train_test_set(collection)
         del collection
-
+    random.shuffle(train_collection)
+    random.shuffle(test_collection)
     train_collection = train_collection[:2000]
     test_collection = test_collection[:200]
     print_('train size:', len(train_collection))

@@ -33,9 +33,10 @@ def split_list(list_, ratio=0.8):
 
 @name_decorator
 def balance_label(collection_, key):
-    label_set = set()
+    label_set = dict()
     for e in collection_:
-        label_set.add(e[key])
+        label_set[e[key]] = label_set.get(e[key], 0) + 1
+    print_("data distribute :", label_set)
     collection_filters = []
     for label in label_set:
         collection_filters.append(list(filter(lambda z: z[key] == label, collection_)))
