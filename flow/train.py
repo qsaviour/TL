@@ -14,10 +14,9 @@ def train(args):
                                                                   args.force)
 
     if args.parallel:
-        from flow.data_prepare import multiple_prepare
+        from flow.data_generator import multiple_prepare, multiple_generator
         train_collection = multiple_prepare(train_collection, multi_prepare_record, args.parallel)
-        from flow.data_generator import multiple_generator
-        generator = multiple_generator(train_collection, args.batch, args.parallel)
+        generator = multiple_generator(train_collection, args.batch, args.parallel, True)
     else:
         from flow.data_generator import single_generator
         generator = single_generator(train_collection, args.batch, multi_prepare_record, multi_generate_record, True)

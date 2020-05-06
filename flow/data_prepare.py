@@ -25,17 +25,6 @@ def get_train_test_collection(base, data_prepare, file_filter, force=True):
     return train_collection, test_collection
 
 
-def multiple_prepare(collection, function, worker_num):
-    from multiprocessing.dummy import Pool
-    from multiprocessing import cpu_count
-    p_num = max(min(worker_num, cpu_count() - 1), 1)
-    pool = Pool(p_num)
-    collection = pool.map(function, collection)
-    pool.close()
-    del pool
-    return collection
-
-
 @name_decorator
 def exist_pkl(base_path):
     stock_path = cvt_abs_path(os.path.join(base_path, 'stock'))

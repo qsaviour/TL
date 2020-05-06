@@ -1,25 +1,35 @@
-from custom import multi_generate_record
-from tool.others import name_decorator, print_
+from custom import multi_prepare_record, multi_generate_record
+from tool.others import name_decorator
 import random
-import cv2
 
 
 @name_decorator
-def single_generator(collection, batch_size, prepare_func, generate_func, aug):
+def single_generator(collection, batch_size, aug):
     while True:
         collection_batch = random.choices(collection, k=batch_size)
         x = []
         y = []
         for e in collection_batch:
-            e = prepare_func(e)
-            x_, y_ = generate_func(e, aug)
+            e = multi_prepare_record(e)
+            x_, y_ = multi_generate_record(e, aug)
             x.append(x_)
             y.append(y_)
         yield x, y
 
 
+def multiple_prepare(collection, function, worker_num):
+    from multiprocessing.dummy import Pool
+    from multiprocessing import cpu_count
+    p_num = max(min(worker_num, cpu_count() - 1), 1)
+    pool = Pool(p_num)
+    collection = pool.map(function, collection)
+    pool.close()
+    del pool
+    return collection
+
+
 @name_decorator
-def multiple_generator(collection, batch_size, worker_num, q_limit=10):
+def multiple_generator(collection, batch_size, worker_num, aug, q_limit=10):
     """
     :param collection: collection
     :param batch_size:
@@ -38,7 +48,7 @@ def multiple_generator(collection, batch_size, worker_num, q_limit=10):
                 x = []
                 y = []
                 for e in collection_batch:
-                    x_, y_ = multi_generate_record(e)
+                    x_, y_ = multi_generate_record(e, aug)
                     x.append(x_)
                     y.append(y_)
                 queue.put((x, y))
