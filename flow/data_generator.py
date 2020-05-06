@@ -1,13 +1,12 @@
 from custom import multi_prepare_record, multi_generate_record
 from tool.others import name_decorator
-import random
 import numpy as np
 
 
 @name_decorator
 def single_generator(collection, batch_size, aug):
     while True:
-        collection_batch = random.choices(collection, k=batch_size)
+        collection_batch = np.random.choice(collection, batch_size)
         x = []
         y = []
         for e in collection_batch:
@@ -45,18 +44,15 @@ def multiple_generator(collection, batch_size, worker_num, aug, q_limit=10):
     def feed_queue1():
         while True:
             if queue.qsize() < q_limit:
-                collection_batch = random.choices(collection, k=batch_size)
+                collection_batch = np.random.choice(collection, batch_size)
                 x = []
                 y = []
                 for e in collection_batch:
                     x_, y_ = multi_generate_record(e, aug)
                     x.append(x_)
                     y.append(y_)
-                print(1)
                 x = np.concatenate(x, axis=0)
-                print(2)
                 y = np.concatenate(y, axis=0)
-                print(3)
                 queue.put((x, y))
 
     def feed_queue3():

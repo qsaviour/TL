@@ -2,7 +2,7 @@ import os
 from tool.path_parser import dfs, cvt_abs_path, make_dirs
 import pickle
 from tool.others import name_decorator, print_, split_train_test_collection
-import random
+import numpy as np
 
 
 def get_train_test_collection(base, data_prepare, file_filter, force=True):
@@ -17,8 +17,8 @@ def get_train_test_collection(base, data_prepare, file_filter, force=True):
         train_collection, test_collection = split_train_test_collection(collection)
         save_pkl(base, train_collection, test_collection)
 
-    random.shuffle(train_collection)
-    random.shuffle(test_collection)
+    np.random.shuffle(train_collection)
+    np.random.shuffle(test_collection)
     print_('train size:', len(train_collection))
     print_('test size:', len(test_collection))
 

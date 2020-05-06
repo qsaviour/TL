@@ -5,9 +5,6 @@ from tool.others import name_decorator, print_
 
 import numpy as np
 import os
-import random
-
-random.seed(1234)
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '3,4'
 import autokeras as ak

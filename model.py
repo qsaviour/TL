@@ -1,3 +1,6 @@
+import os
+
+os.environ['VISIBLE_CUDA_DEVICES'] = '3,4'
 from keras.models import Model
 from keras.layers import Input, Conv2D, GlobalAveragePooling2D, Dense, \
     BatchNormalization, Activation, Add, Softmax, MaxPooling2D
@@ -80,6 +83,7 @@ def build_model(input_shape=(256, 256, 3)):
 
     return Model(inputs, softmax)
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     model = build_model()
     model.save('test.h5')

@@ -31,6 +31,12 @@ def train(args):
     model = build_model((256, 256, 3))
     model.compile('adam', 'categorical_crossentropy')
     print('fitting.....')
-    model.fit_generator(generator, 100, 1000, callbacks=[ckp, reduce_lr], validation_data=g_validate,
-                        validation_steps=80)
-# collection = data_prepare()
+    for epochs in range(1000):
+        for stpes in range(100):
+            x, y = next(generator)
+            loss_ = model.train_on_batch(x, y)
+            print("epochs:{}\t steps:{}\t loss:{}\t".format(epochs, stpes, loss_), end='\r')
+        x_, y_ = next(g_validate)
+        loss = model.evaluate(x_, y_)
+        print("epochs:{}\t loss:{}\t".format(epochs, loss), end='\r')
+
