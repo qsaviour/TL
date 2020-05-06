@@ -1,7 +1,6 @@
-from flow.data_prepare import pre_prepare, exist_pkl, get_pkl, save_pkl
-from custom import data_prepare, file_filter, split_train_test_set, multi_prepare_record
-from tool.path_parser import cvt_abs_path
-from tool.others import name_decorator, print_
+from flow.data_prepare import get_train_test_collection
+from custom import data_prepare, file_filter, multi_prepare_record, multi_generate_record
+from tool.others import name_decorator
 
 
 @name_decorator
@@ -11,22 +10,17 @@ def train(args):
     :param args: Just args.
     :return:
     """
-    if exist_pkl(args.base) and not args.force:
-        print_("use the existing pkl file")
-        train_collection, test_collection = get_pkl(args.base)
-    else:
-        print_("prepare data and dump into pkl file")
-        collection = pre_prepare(cvt_abs_path(args.base), data_prepare, file_filter)
-        train_collection, test_collection = split_train_test_set(collection)
-        save_pkl(args.base, train_collection, test_collection)
+    train_collection, test_collection = get_train_test_collection(args.base, data_prepare, file_filter,
+                                                                  args.force)
+
     if args.parallel:
         from flow.data_prepare import multiple_prepare
         train_collection = multiple_prepare(train_collection, multi_prepare_record, args.parallel)
         from flow.data_generator import multiple_generator
-        generator = multiple_generator(train_collection, args.batch, args.parallel, args.orderly_sample)
+        generator = multiple_generator(train_collection, args.batch, args.parallel)
     else:
         from flow.data_generator import single_generator
-        generator = single_generator(train_collection, args.batch, args.orderly_sample)
+        generator = single_generator(train_collection, args.batch, multi_prepare_record, multi_generate_record, True)
 
     import time
     t1 = time.time()

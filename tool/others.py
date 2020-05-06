@@ -52,3 +52,13 @@ def balance_label(collection_, key):
         collection_res += collection_tmp
 
     return collection_res
+
+
+@name_decorator
+def split_train_test_collection(collection):
+    train_collection, test_collection = split_list(collection, 0.8)
+
+    train_collection = balance_label(train_collection, 'annotation')
+    test_collection = balance_label(test_collection, 'annotation')
+
+    return train_collection, test_collection

@@ -50,28 +50,17 @@ def data_prepare(data_path, collection):
         return collection
 
 
-@name_decorator
-def split_train_test_set(collection):
-    train_collection, test_collection = split_list(collection, 0.8)
-
-    train_collection = balance_label(train_collection, 'annotation')
-    test_collection = balance_label(test_collection, 'annotation')
-
-    return train_collection, test_collection
-
-
 def multi_prepare_record(record):
     # record['img'] = cv2.imread(record['img_path'])
     return record
 
 
-def generate_x_y(record, augment=False):
+def multi_generate_record(record, augment):
     # img = record['img']
     img = cv2.imread(record['img_path'])
     location = record['location']
     if augment:
-        crop = processor.augment(img, location, (256, 256), True, 0.05, 0.05, False, False, False, False, False, False,
-                                 False)
+        crop = processor.augment(img, location, (256, 256), True, 0.05, 0.05)
     else:
         crop = processor.augment(img, location, (256, 256), True, 0.05, 0.05, False, False, False, False, False, False,
                                  False)

@@ -1,7 +1,28 @@
 import os
 from tool.path_parser import dfs, cvt_abs_path, make_dirs
 import pickle
-from tool.others import name_decorator
+from tool.others import name_decorator, print_, split_train_test_collection
+import random
+
+
+def get_train_test_collection(base, data_prepare, file_filter, force=True):
+    if exist_pkl(base) and not force:
+        print_("use the existing pkl file")
+        train_collection, test_collection = get_pkl(base)
+    else:
+        print_("prepare data and dump into pkl file")
+        data_path = cvt_abs_path(os.path.join(cvt_abs_path(base), 'data'))
+        collection = []
+        dfs(data_path, file_filter, data_prepare, collection)
+        train_collection, test_collection = split_train_test_collection(collection)
+        save_pkl(base, train_collection, test_collection)
+
+    random.shuffle(train_collection)
+    random.shuffle(test_collection)
+    print_('train size:', len(train_collection))
+    print_('test size:', len(test_collection))
+
+    return train_collection, test_collection
 
 
 def multiple_prepare(collection, function, worker_num):
@@ -10,6 +31,7 @@ def multiple_prepare(collection, function, worker_num):
     p_num = max(min(worker_num, cpu_count() - 1), 1)
     pool = Pool(p_num)
     collection = pool.map(function, collection)
+    pool.close()
     del pool
     return collection
 
@@ -37,16 +59,6 @@ def get_pkl(base_path):
         test_collection = pickle.load(f)
 
     return train_collection, test_collection
-
-
-@name_decorator
-def pre_prepare(base_path, function, file_filter):
-    print(__name__)
-    # get data dir
-    data_path = cvt_abs_path(os.path.join(base_path, 'data'))
-    collection_ = []
-    dfs(data_path, file_filter, function, collection_)
-    return collection_
 
 
 @name_decorator

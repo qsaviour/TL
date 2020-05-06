@@ -150,7 +150,7 @@ class Processor:
         x = (radius - img.shape[1]) // 2
         y = (radius - img.shape[0]) // 2
         # print(img.shape, radius, target_shape, target.shape, x, y)
-        target[y:img.shape[0]+y, x:img.shape[1]+x] = img
+        target[y:img.shape[0] + y, x:img.shape[1] + x] = img
         return target
 
     def augment(self, img, location=None, target_shape=None, padding=True, drift_ratio=0.05, scale_ratio=0.05,
@@ -164,7 +164,7 @@ class Processor:
             if rectify:
                 location = self.rectify(location)
             crop = self.shear(img, location, padding)
-            crop = self.padding_rectify(crop)
+
         else:
             crop = img
         if contrast:
@@ -182,6 +182,7 @@ class Processor:
                 crop = self.saturate(crop)
         if noise:
             crop = self.noise(crop)
+        crop = self.padding_rectify(crop)
         if target_shape:
             crop = np.clip(crop, 0, 255).astype(np.uint8)
             crop = cv2.resize(crop, target_shape)
