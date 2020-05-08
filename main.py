@@ -17,8 +17,7 @@ def parse_argument():
 
     parser_.add_argument("-autokeras", "--autokeras", help="autokeras", action="store_true")
 
-    parser_.add_argument("-inference", "--inference", help="inferring", type=str)
-    parser_.add_argument("--not_augment", help="don`t augment when generate", action="store_true")
+    parser_.add_argument("-infer", "--inference", help="inferring", type=str)
     parser_.add_argument("--image", help="an inference image file", type=str)
     parser_.add_argument("--images", help="an inference folder contain images", type=str, default='')
 

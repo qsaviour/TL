@@ -92,7 +92,6 @@ class Processor:
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         hsv = hsv.astype(np.float32)
         hsv[:, :, 0] = (hsv[:, :, 0] + self.shake(180, hue_ratio)) % 180
-        # hsv[:, :, 0] *= 1 + self.shake(hue_ratio, 1)
         hsv = np.clip(hsv, 0, 255)
         hsv = hsv.astype(np.uint8)
         img = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR).astype(np.int)
@@ -130,7 +129,7 @@ class Processor:
         return img
 
     @staticmethod
-    def noise(img, p_=0.9, noise_rage=30, mask_threshold=None, clip=False):
+    def noise(img, p_=0.9, noise_rage=10, mask_threshold=None, clip=False):
         if np.random.random() > p_:
             return img
         if mask_threshold is None:
@@ -149,11 +148,10 @@ class Processor:
         target = np.zeros(target_shape).astype(np.uint8)
         x = (radius - img.shape[1]) // 2
         y = (radius - img.shape[0]) // 2
-        # print(img.shape, radius, target_shape, target.shape, x, y)
         target[y:img.shape[0] + y, x:img.shape[1] + x] = img
         return target
 
-    def augment(self, img, location=None, target_shape=None, padding=True, drift_ratio=0.05, scale_ratio=0.05,
+    def augment(self, img, location=None, target_shape=None, padding=True, drift_ratio=0.02, scale_ratio=0.02,
                 rectify=False, contrast=True, brightness=True, flip=True, hue=True, saturate=True, noise=True):
         img = img.astype(np.float)
         if location:
@@ -180,8 +178,8 @@ class Processor:
                 crop = self.hue(crop)
             if saturate:
                 crop = self.saturate(crop)
-        if noise:
-            crop = self.noise(crop)
+        # if noise:
+        #     crop = self.noise(crop)
         crop = self.padding_rectify(crop)
         if target_shape:
             crop = np.clip(crop, 0, 255).astype(np.uint8)

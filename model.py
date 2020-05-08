@@ -1,6 +1,3 @@
-import os
-
-os.environ['VISIBLE_CUDA_DEVICES'] = '3,4'
 from keras.models import Model
 from keras.layers import Input, Conv2D, GlobalAveragePooling2D, Dense, \
     BatchNormalization, Activation, Add, Softmax, MaxPooling2D
@@ -13,7 +10,6 @@ def block1(layer, filters1, filter2, filters3):
     conv1 = Conv2D(filters1, (1, 1), use_bias=False, kernel_regularizer=l2(regularizer_value))(layer)
     batch_normalization = BatchNormalization(axis=3)(conv1)
     activation = Activation('relu')(batch_normalization)
-    # zero_padding = ZeroPadding2D(((1, 1), (1, 1)))(activation)
     conv2 = Conv2D(filter2, (3, 3), use_bias=False, padding='same', kernel_regularizer=l2(regularizer_value))(
         activation)
     batch_normalization = BatchNormalization(axis=3)(conv2)
@@ -28,7 +24,6 @@ def block2(layer, conv2_filters, conv2_stride, conv3_filters):
     conv1 = Conv2D(64, (1, 1), use_bias=False, kernel_regularizer=l2(regularizer_value))(activation)
     batch_normalization = BatchNormalization(axis=3)(conv1)
     activation = Activation('relu')(batch_normalization)
-    # zero_padding = ZeroPadding2D(((1, 1), (1, 1)))(activation)
     conv2 = Conv2D(conv2_filters, (3, 3), strides=(1, 1), padding='same', use_bias=False,
                    kernel_regularizer=l2(regularizer_value))(activation)
     if conv2_stride == (2, 2):
@@ -39,14 +34,9 @@ def block2(layer, conv2_filters, conv2_stride, conv3_filters):
     return conv3
 
 
-# input_shape = (128, 128, 3)
-# if __name__ == '__main__':
-def build_model(input_shape=(256, 256, 3)):
+def build_model(input_shape=(128, 128, 3)):
     inputs = Input(input_shape)
-    # zero_padding = ZeroPadding2D(((3, 3), (3, 3)))(input)
-    # conv = Conv2D(64, (7, 7), strides=(2, 2), padding='same', kernel_regularizer=l2(regularizer_value))(inputs)
     conv = Conv2D(64, (7, 7), strides=(1, 1), padding='same', kernel_regularizer=l2(regularizer_value))(inputs)
-    # zero_padding = ZeroPadding2D(((1, 1), (1, 1)))(conv)
     max_pooling = MaxPooling2D((3, 3), (2, 2), padding='same')(conv)
     batch_normalization = BatchNormalization(axis=3)(max_pooling)
     activation = Activation('relu')(batch_normalization)
@@ -59,7 +49,6 @@ def build_model(input_shape=(256, 256, 3)):
     add2 = Add()([block2_r, add1])
 
     block3_r = block2(add2, 64, (2, 2), 256)
-    # block3_r = block2(add2, 64, (1, 1), 256)
     block3_l = MaxPooling2D((2, 2), (2, 2), padding='same')(add2)
     add3 = Add()([block3_l, block3_r])
 
@@ -82,8 +71,3 @@ def build_model(input_shape=(256, 256, 3)):
     softmax = Softmax()(dense)
 
     return Model(inputs, softmax)
-
-
-if __name__ == '__main__':
-    model = build_model()
-    model.save('test.h5')

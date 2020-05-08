@@ -14,15 +14,18 @@ def single_generator(collection, batch_size, aug):
             x_, y_ = multi_generate_record(e, aug)
             x.append(x_)
             y.append(y_)
+        x = np.concatenate(x, axis=0)
+        y = np.concatenate(y, axis=0)
         yield x, y
+    # return np.random.random((32, 256, 256, 3)), np.random.randint(0, 2, (32, 2))
 
 
-def multiple_prepare(collection, function, worker_num):
+def multiple_prepare(collection,  worker_num):
     from multiprocessing.dummy import Pool
     from multiprocessing import cpu_count
     p_num = max(min(worker_num, cpu_count() - 1), 1)
     pool = Pool(p_num)
-    collection = pool.map(function, collection)
+    collection = pool.map(multi_prepare_record, collection)
     pool.close()
     del pool
     return collection

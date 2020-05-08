@@ -1,14 +1,8 @@
-from multiprocessing import Pool, Process
-import time
+import argparse
+import pickle
 
+parser_ = argparse.ArgumentParser()
+parser_.add_argument("-n", "--name", help="inferring", type=str)
+args = parser_.parse_args()
 
-def k():
-    print(9)
-
-
-if __name__ == '__main__':
-    pool = Pool(3)
-    for _ in range(100):
-        pool.apply_async(k)
-    time.sleep(2)
-    print(4)
+print(args)

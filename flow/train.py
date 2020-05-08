@@ -1,6 +1,7 @@
 from flow.data_prepare import get_train_test_collection
-from custom import data_prepare, file_filter, multi_prepare_record, multi_generate_record
+from custom import data_prepare, file_filter
 from tool.others import name_decorator
+import cv2
 
 
 @name_decorator
@@ -15,9 +16,9 @@ def train(args):
 
     if args.parallel:
         from flow.data_generator import multiple_prepare, multiple_generator
-        train_collection = multiple_prepare(train_collection, multi_prepare_record, args.parallel)
+        train_collection = multiple_prepare(train_collection, args.parallel)
         generator = multiple_generator(train_collection, args.batch, args.parallel, True)
-        test_collection = multiple_prepare(test_collection, multi_prepare_record, args.parallel)
+        test_collection = multiple_prepare(test_collection, args.parallel)
         g_validate = multiple_generator(test_collection, args.batch, args.parallel, False)
     else:
         from flow.data_generator import single_generator
@@ -28,15 +29,13 @@ def train(args):
     from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
     ckp = ModelCheckpoint('../stock/models/weights.{epoch:02d}-{val_loss:.2f}.hdf5', save_best_only=True)
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.4, patience=5, min_lr=1e-6)
-    model = build_model((256, 256, 3))
+    model = build_model((128, 128, 3))
     model.compile('adam', 'categorical_crossentropy')
     print('fitting.....')
-    for epochs in range(1000):
-        for stpes in range(100):
-            x, y = next(generator)
-            loss_ = model.train_on_batch(x, y)
-            print("epochs:{}\t steps:{}\t loss:{}\t".format(epochs, stpes, loss_), end='\r')
-        x_, y_ = next(g_validate)
-        loss = model.evaluate(x_, y_)
-        print("epochs:{}\t loss:{}\t".format(epochs, loss), end='\r')
 
+    model.fit_generator(generator, 300, 1000, callbacks=[ckp, reduce_lr], validation_data=g_validate,
+                        validation_steps=100)
+
+
+if __name__ == '__main__':
+    train()

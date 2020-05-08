@@ -60,7 +60,7 @@ def save_pkl(base_path, train_collection, test_collection):
     train_pkl_path = os.path.join(stock_path, 'train_collection.pkl')
     test_pkl_path = os.path.join(stock_path, 'test_collection.pkl')
 
-    print("write paths to pkl:", train_pkl_path, test_pkl_path)
+    print_("write paths to pkl:", train_pkl_path, test_pkl_path)
 
     with open(train_pkl_path, 'wb') as f:
         pickle.dump(train_collection, f)

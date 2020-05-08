@@ -2,35 +2,22 @@ import json
 import re
 import os
 from tool.path_parser import path_split, suffix_filter
-from tool.others import split_list, name_decorator, balance_label
 import cv2
 from tool.processor import processor
 import numpy as np
 
 
 def file_filter(data_path):
-    """
-    Whether  The data_path_ will be passed into "data_prepare" function.
-    :param data_path: the right one.
-    :return: True/False
-    """
     return suffix_filter(['.json'])(data_path)
 
 
 def data_prepare(data_path, collection):
-    """
-    Be done in dfs. Be done on single process.
-    :param data_path: [data_folder]
-    :param collection: [ a_record]. a_record - store the information
-    :return: prepared collection. The collection will be passed into "split_train_test_set" function
-    """
     with open(data_path) as f:
         json_content = json.load(f)
     if json_content.get('shapes') is None or len(json_content.get('shapes')) == 0:
         return
     json_path_base, json_name, prefix, suffix = path_split(data_path)
     image_path_base = re.sub("json[/|\\\]?$", "jpg", json_path_base)
-    # image_path = '/'.join([image_path_base, os.path.split(json_content["imagePath"])[-1]])
     image_path = '/'.join([image_path_base, prefix + '.jpg'])
     if not os.path.exists(image_path):
         print(image_path, "not exists")
@@ -57,14 +44,22 @@ def multi_prepare_record(record):
 
 def multi_generate_record(record, augment):
     # img = record['img']
+    print(record['img_path'])
+    print(record['label'])
+    print(record['location'])
     img = cv2.imread(record['img_path'])
     location = record['location']
+    x, y, w, h = map(int, location)
     if augment:
-        crop = processor.augment(img, location, (256, 256), True, 0.05, 0.05)
+        crop = processor.augment(img, location, (128 * 3, 128 * 3), True, 0.05, 0.05)
     else:
-        crop = processor.augment(img, location, (256, 256), True, 0.05, 0.05, False, False, False, False, False, False,
+        crop = processor.augment(img, location, (128 * 3, 128 * 3), True, 0.05, 0.05, False, False, False, False, False,
+                                 False,
                                  False)
     crop = crop.reshape((1,) + crop.shape)
+
+    cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+    cv2.imshow("ground", img)
 
     label = record['label']
     label = np.array(label).reshape(1, -1)
