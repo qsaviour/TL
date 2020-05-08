@@ -70,4 +70,6 @@ def build_model(input_shape=(128, 128, 3)):
     dense = Dense(2)(global_average_polling)
     softmax = Softmax()(dense)
 
-    return Model(inputs, softmax)
+    model = Model(inputs, softmax)
+    model.compile('adam', 'categorical_crossentropy', metrics=['accuracy'])
+    return model

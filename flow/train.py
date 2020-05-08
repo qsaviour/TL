@@ -1,7 +1,6 @@
 from flow.data_prepare import get_train_test_collection
 from custom import data_prepare, file_filter
 from tool.others import name_decorator
-import cv2
 
 
 @name_decorator
@@ -30,7 +29,6 @@ def train(args):
     ckp = ModelCheckpoint('../stock/models/weights.{epoch:02d}-{val_loss:.2f}.hdf5', save_best_only=True)
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.4, patience=5, min_lr=1e-6)
     model = build_model((128, 128, 3))
-    model.compile('adam', 'categorical_crossentropy')
     print('fitting.....')
 
     model.fit_generator(generator, 300, 1000, callbacks=[ckp, reduce_lr], validation_data=g_validate,

@@ -4,8 +4,13 @@ import cv2
 
 class Processor:
     @staticmethod
-    def shake(value, ratio):
-        return value * ratio * (np.random.random() - 0.5) * 2
+    def shake(value, ratio=1.):
+        if type(value) == int or type(value) == float:
+            return value * ratio * (np.random.random() - 0.5) * 2
+        elif type(value) in (tuple, list) and len(value) == 2:
+            return np.random.random() * abs(value[1] - value[0]) - value[0]
+        else:
+            raise ValueError("shake got wrong type of parameter")
 
     def drift(self, location, df_ratio):
         x, y, w, h = location

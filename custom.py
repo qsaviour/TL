@@ -44,22 +44,15 @@ def multi_prepare_record(record):
 
 def multi_generate_record(record, augment):
     # img = record['img']
-    print(record['img_path'])
-    print(record['label'])
-    print(record['location'])
     img = cv2.imread(record['img_path'])
     location = record['location']
-    x, y, w, h = map(int, location)
     if augment:
-        crop = processor.augment(img, location, (128 * 3, 128 * 3), True, 0.05, 0.05)
+        crop = processor.augment(img, location, (128, 128), True, 0.05, 0.05)
     else:
-        crop = processor.augment(img, location, (128 * 3, 128 * 3), True, 0.05, 0.05, False, False, False, False, False,
+        crop = processor.augment(img, location, (128, 128), True, 0.05, 0.05, False, False, False, False, False,
                                  False,
                                  False)
     crop = crop.reshape((1,) + crop.shape)
-
-    cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-    cv2.imshow("ground", img)
 
     label = record['label']
     label = np.array(label).reshape(1, -1)
