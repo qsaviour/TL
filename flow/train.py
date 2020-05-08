@@ -18,7 +18,7 @@ def train(args):
         train_collection = multiple_prepare(train_collection, args.parallel)
         generator = multiple_generator(train_collection, args.batch, args.parallel, True)
         test_collection = multiple_prepare(test_collection, args.parallel)
-        g_validate = multiple_generator(test_collection, args.batch, args.parallel, False)
+        g_validate = multiple_generator(test_collection, args.batch, args.parallel, False, randomly=False)
     else:
         from flow.data_generator import single_generator
         generator = single_generator(train_collection, args.batch, True)
@@ -32,7 +32,7 @@ def train(args):
     print('fitting.....')
 
     model.fit_generator(generator, 300, 1000, callbacks=[ckp, reduce_lr], validation_data=g_validate,
-                        validation_steps=100)
+                        validation_steps=1)
 
 
 if __name__ == '__main__':

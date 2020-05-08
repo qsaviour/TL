@@ -20,7 +20,7 @@ def single_generator(collection, batch_size, aug):
     # return np.random.random((32, 256, 256, 3)), np.random.randint(0, 2, (32, 2))
 
 
-def multiple_prepare(collection,  worker_num):
+def multiple_prepare(collection, worker_num):
     from multiprocessing.dummy import Pool
     from multiprocessing import cpu_count
     p_num = max(min(worker_num, cpu_count() - 1), 1)
@@ -32,17 +32,7 @@ def multiple_prepare(collection,  worker_num):
 
 
 @name_decorator
-def multiple_generator(collection, batch_size, worker_num, aug, q_limit=10):
-    """
-    :param collection: collection
-    :param batch_size:
-    :param gen_type:
-    :param feed_type: 1in1 - one thread feeds data to one batch.
-                      3in1 - multiple threads feed data to one batch (may be need used in generate one big batch).
-    :param q_limit:
-    :return:
-    """
-
+def multiple_generator(collection, batch_size, worker_num, aug, q_limit=10, randomly=True):
     @name_decorator
     def feed_queue1():
         while True:
@@ -63,13 +53,20 @@ def multiple_generator(collection, batch_size, worker_num, aug, q_limit=10):
 
     from multiprocessing.dummy import Pool, JoinableQueue
     from multiprocessing import cpu_count
-
-    queue = JoinableQueue()
     p_num = max(min(worker_num, cpu_count() - 1), 1)
     pool = Pool(p_num)
-    for _ in range(p_num):
-        pool.apply_async(feed_queue1)
+    if randomly:
+        queue = JoinableQueue()
+        for _ in range(p_num):
+            pool.apply_async(feed_queue1)
 
-    while True:
-        out = queue.get()
-        yield out
+        while True:
+            out = queue.get()
+            yield out
+    else:
+        f = lambda e: multi_generate_record(e, aug)
+        out = pool.map(f, collection)
+        x = np.concatenate([e[0] for e in out], axis=0)
+        y = np.concatenate([e[1] for e in out], axis=0)
+        while True:
+            yield x, y
